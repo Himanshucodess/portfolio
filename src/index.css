@@ -1,0 +1,401 @@
+@import "tailwindcss";
+
+@theme {
+  --font-serif: "Instrument Serif", Georgia, serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+:root {
+  --bg: #FAF9F6;
+  --ink: #252525;
+  --dim: #77736F;
+  --dim-soft: rgba(119, 115, 111, 0.7);
+  --acc: #C92A2A;
+  --acc-bright: #E03131;
+  --acc-soft: rgba(201, 42, 42, 0.07);
+  --line: rgba(37, 37, 37, 0.18);
+  --line-soft: rgba(37, 37, 37, 0.15);
+  --panel: #FAF9F6;
+  --shadow: rgba(37, 37, 37, 0.08);
+}
+
+[data-theme="dark"] {
+  --bg: #0F0E0C;
+  --ink: #EDE9E3;
+  --dim: #8F8A83;
+  --dim-soft: rgba(143, 138, 131, 0.7);
+  --acc: #E0534D;
+  --acc-bright: #F06055;
+  --acc-soft: rgba(224, 83, 77, 0.12);
+  --line: rgba(237, 233, 227, 0.18);
+  --line-soft: rgba(237, 233, 227, 0.14);
+  --panel: #141210;
+  --shadow: rgba(0, 0, 0, 0.45);
+}
+
+html, body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--ink);
+}
+
+body {
+  font-family: var(--font-serif);
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+  cursor: crosshair;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+body a, body button, body input {
+  cursor: crosshair;
+}
+
+::selection {
+  background: var(--acc);
+  color: var(--bg);
+}
+
+.serif {
+  font-family: var(--font-serif);
+  font-weight: 400;
+}
+
+.mono {
+  font-family: var(--font-mono);
+}
+
+/* ---------- single-viewport stage ---------- */
+
+.stage {
+  position: fixed;
+  inset: 0;
+  height: 100dvh;
+  width: 100vw;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  align-items: center;
+  gap: 2rem;
+  padding: 0 clamp(1.25rem, 4vw, 4rem);
+}
+
+.stage-left {
+  max-width: 36rem;
+  justify-self: end;
+  width: 100%;
+}
+
+.stage-right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  height: 100%;
+  padding: 3.5rem 0;
+}
+
+.statement {
+  font-size: clamp(1.8rem, 3.1vw, 2.9rem);
+  line-height: 1.28;
+  letter-spacing: 0;
+  animation: rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(14px); filter: blur(3px); }
+  to { opacity: 1; transform: none; filter: none; }
+}
+
+/* ---------- interactive words ---------- */
+
+.word {
+  font-style: italic;
+  color: var(--acc);
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.25s ease, color 0.25s ease;
+}
+
+button.word:hover, a.word:hover {
+  color: var(--acc-bright);
+  border-bottom-color: color-mix(in srgb, var(--acc) 55%, transparent);
+}
+
+.word:focus-visible {
+  outline: none;
+  border-bottom: 1px solid var(--acc);
+  color: var(--acc-bright);
+}
+
+/* ---------- peripheral microcopy ---------- */
+
+.meta {
+  position: fixed;
+  z-index: 40;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: var(--dim);
+  margin: 0;
+}
+
+.meta-tr { top: 1.1rem; right: 1.25rem; }
+.meta-bl { bottom: 1.1rem; left: 1.25rem; }
+.meta-br {
+  bottom: 1.1rem;
+  right: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.meta-link {
+  color: var(--dim);
+  text-decoration: none;
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  letter-spacing: inherit;
+}
+
+button.meta-link:hover, a.meta-link:hover {
+  color: var(--acc);
+}
+
+.meta-link:focus-visible {
+  outline: none;
+  color: var(--acc);
+  text-decoration: underline;
+}
+
+/* ---------- canvas + status ---------- */
+
+.face-wrap {
+  position: relative;
+  width: min(100%, 560px);
+  height: min(72vh, 620px);
+}
+
+.face-wrap canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.status-line {
+  margin-top: 0.9rem;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  color: var(--dim);
+  min-height: 1.5em;
+}
+
+/* ---------- tooltip ---------- */
+
+.tip {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 100;
+  max-width: 300px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  padding: 0.85rem 1rem;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  line-height: 1.7;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+  opacity: 0;
+  transition: opacity 0.18s ease, background 0.3s ease;
+  pointer-events: none;
+  box-shadow: 4px 4px 0 var(--shadow);
+}
+
+.tip.on {
+  opacity: 1;
+}
+
+.tip.links {
+  pointer-events: auto;
+}
+
+.tip-kind {
+  font-size: 9.5px;
+  letter-spacing: 0.24em;
+  color: var(--dim);
+}
+
+.tip-title {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 19px;
+  color: var(--acc);
+  line-height: 1.3;
+  margin: 0.15rem 0 0.3rem;
+}
+
+.tip-stack {
+  color: var(--dim);
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+}
+
+.tip-links {
+  margin-top: 0.5rem;
+  display: flex;
+  gap: 1rem;
+}
+
+.tip-links a, .tip-links button {
+  color: var(--ink);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  background: none;
+  border: 0;
+  padding: 0;
+  font-family: inherit;
+  border-bottom: 1px solid var(--acc);
+}
+
+.tip-links a:hover, .tip-links button:hover {
+  color: var(--acc);
+}
+
+.tip-mailrow {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  margin: 0;
+  padding-left: 0.75rem;
+  border-left: 1px solid var(--line);
+}
+
+.tip-mail {
+  color: var(--dim);
+  font-size: 10.5px;
+  letter-spacing: 0.04em;
+  user-select: all;
+}
+
+.tip-copy {
+  color: var(--ink);
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  background: none;
+  border: 0;
+  border-bottom: 1px solid var(--acc);
+  padding: 0;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.tip-copy:hover {
+  color: var(--acc);
+}
+
+.tip-mini {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: 0;
+  padding: 0.2rem 0;
+  font: inherit;
+  color: var(--ink);
+}
+
+button.tip-mini:hover {
+  color: var(--acc);
+}
+
+.tip-mini span {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 14px;
+}
+
+/* ---------- terminal + palette panels ---------- */
+
+.overlay-cream {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  box-shadow: 6px 6px 0 var(--shadow);
+}
+
+/* ---------- responsive: stacked mobile ---------- */
+
+@media (max-width: 860px), (pointer: coarse) and (max-width: 1100px) {
+  html, body {
+    height: auto;
+  }
+
+  body {
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .stage {
+    position: static;
+    height: auto;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding: 4.5rem 1.25rem 5.5rem;
+  }
+
+  .stage-left {
+    justify-self: start;
+    max-width: 100%;
+  }
+
+  .statement {
+    font-size: clamp(1.7rem, 7.4vw, 2.3rem);
+  }
+
+  .stage-right {
+    height: auto;
+    padding: 2rem 0 0;
+  }
+
+  .face-wrap {
+    width: 100%;
+    max-width: 440px;
+    height: 52vh;
+    min-height: 340px;
+    margin: 0 auto;
+  }
+
+  .tip {
+    max-width: calc(100vw - 2rem);
+  }
+
+  .meta-tr { top: 0.9rem; right: 1rem; }
+  .meta-bl { display: none; }
+  .meta-br { bottom: 0.9rem; right: 1rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .statement {
+    animation: none;
+  }
+  .tip {
+    transition: none;
+  }
+  body {
+    transition: none;
+  }
+}
